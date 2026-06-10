@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 const int MAX_LOCATIONS = 20;
-"Mubara ----------------------"
 using namespace std;
 
 //==================== ORDER STRUCTURE ====================
