@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
+#include <stack>
+#include <queue>
 const int MAX_LOCATIONS = 20;
+
 using namespace std;
 
 //==================== ORDER STRUCTURE ====================
@@ -688,7 +691,7 @@ public:
     int getTotalRiders()
     {
         return totalRiders;
-    }
+	}
 };
 
 class Graph
@@ -827,7 +830,7 @@ public:
                 << " km"
                 << endl;
         }
-    }
+    } 
 };
 
 class HistoryManager
@@ -899,6 +902,79 @@ public:
             cancelledOrders;
     }
 };
+//==================== STACK ====================
+
+class OrderStack
+{
+private:
+    int stack[1000];
+    int top;
+
+public:
+    OrderStack()
+    {
+        top = -1;
+    }
+
+    void push(int orderID)
+    {
+        if (top < 999)
+        {
+            stack[++top] = orderID;
+        }
+    }
+
+    void pop()
+    {
+        if (top >= 0)
+        {
+            top--;
+        }
+    }
+
+    bool isEmpty()
+    {
+        return top == -1;
+    }
+};
+
+//==================== QUEUE ====================
+
+class OrderQueue
+{
+private:
+    int queue[1000];
+    int front;
+    int rear;
+
+public:
+    OrderQueue()
+    {
+        front = 0;
+        rear = -1;
+    }
+
+    void enqueue(int orderID)
+    {
+        if (rear < 999)
+        {
+            queue[++rear] = orderID;
+        }
+    }
+
+    void dequeue()
+    {
+        if (front <= rear)
+        {
+            front++;
+        }
+    }
+
+    bool isEmpty()
+    {
+        return front > rear;
+    }
+};
 
 //==================== GLOBAL HEAP ====================
 
@@ -907,6 +983,8 @@ KitchenManager kitchenManager;
 RiderManager riderManager;
 Graph cityGraph;
 HistoryManager historyManager;
+OrderStack orderStack;
+OrderQueue orderQueue;
 
 
 //==================== DYNAMIC ORDER MENU ====================
@@ -938,6 +1016,9 @@ void dynamicOrderScheduling()
             Order o = createOrder();
             orderHeap.insert(o);
 
+            orderStack.push(o.orderID);
+            orderQueue.enqueue(o.orderID);
+
             historyManager.addPending();
 
             break;
@@ -951,6 +1032,9 @@ void dynamicOrderScheduling()
             cin >> id;
 
             orderHeap.cancelOrder(id);
+            if (!orderStack.isEmpty())
+                orderStack.pop();
+
             historyManager.addCancelled();
 
             break;
@@ -998,6 +1082,10 @@ void dynamicOrderScheduling()
 
         case 5:
             orderHeap.deleteMax();
+
+            if (!orderQueue.isEmpty())
+                orderQueue.dequeue();
+
             historyManager.addCompleted();
             break;
 
